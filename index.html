@@ -176,7 +176,7 @@ src="https://www.facebook.com/tr?id=955198970284841&ev=PageView&noscript=1"
     <h3 id="modalTitle">Which book speaks to you?</h3>
     <p class="modal-sub">Each one is a step closer to his heart — pick yours and begin today.</p>
     <div class="modal-options">
-      <a class="modal-option" href="https://selar.com/p/8bbt?affiliate=dr49" target="_blank" rel="noopener">
+      <a class="modal-option" href="https://selar.com/p/8bbt?affiliate=dr49" target="_blank" rel="noopener" onclick="trackPurchaseIntent('Soup-A-Star Cookbook')">
         <span class="mo-icon">📖</span>
         <div>
           <div class="mo-title">Soup-A-Star Cookbook</div>
@@ -185,7 +185,7 @@ src="https://www.facebook.com/tr?id=955198970284841&ev=PageView&noscript=1"
         <span class="mo-arrow">&#8594;</span>
       </a>
       <div class="modal-divider"><span>or</span></div>
-      <a class="modal-option" href="https://selar.com/p/jcwa?affiliate=7ry7" target="_blank" rel="noopener">
+      <a class="modal-option" href="https://selar.com/p/jcwa?affiliate=7ry7" target="_blank" rel="noopener" onclick="trackPurchaseIntent('1 Year Nigerian Meal Plan')">
         <span class="mo-icon">&#128197;</span>
         <div>
           <div class="mo-title">1 Year Nigerian Meal Plan</div>
@@ -194,7 +194,7 @@ src="https://www.facebook.com/tr?id=955198970284841&ev=PageView&noscript=1"
         <span class="mo-arrow">&#8594;</span>
       </a>
     </div>
-    <a class="modal-bundle" href="https://selar.com/p/8bbt?affiliate=dr49" target="_blank" rel="noopener">
+    <a class="modal-bundle" href="https://selar.com/p/8bbt?affiliate=dr49" target="_blank" rel="noopener" onclick="trackPurchaseIntent('Soup-A-Star Cookbook')">
       <span>&#10022; Get Both Books — Best Value &#10022;</span>
       <small>Start your full Nigerian kitchen journey today</small>
     </a>
@@ -358,11 +358,53 @@ src="https://www.facebook.com/tr?id=955198970284841&ev=PageView&noscript=1"
 function openModal(){
   document.getElementById('bookModal').classList.add('active');
   document.body.style.overflow='hidden';
+  // Fire purchase intent events when modal opens
+  trackPurchaseIntent('bundle');
+}
+
+function trackPurchaseIntent(product){
+  // Meta Pixel — ViewContent (strong purchase intent)
+  if(typeof fbq !== 'undefined'){
+    fbq('track', 'ViewContent', {
+      content_name: 'Chef Eme — ' + product,
+      content_ids: [product],
+      content_type: 'product',
+      currency: 'USD',
+      value: 27.00
+    });
+    fbq('track', 'InitiateCheckout', {
+      content_name: 'Chef Eme — ' + product,
+      content_ids: [product],
+      content_type: 'product',
+      currency: 'USD',
+      value: 27.00,
+      num_items: 1
+    });
+  }
+  // TikTok Pixel — AddToCart (purchase intent)
+  if(typeof ttq !== 'undefined'){
+    ttq.track('AddToCart', {
+      value: 27.00,
+      currency: 'USD',
+      content_type: 'product',
+      content_id: product,
+      content_name: 'Chef Eme — ' + product
+    });
+    ttq.track('InitiateCheckout', {
+      value: 27.00,
+      currency: 'USD',
+      content_type: 'product',
+      content_id: product,
+      content_name: 'Chef Eme — ' + product
+    });
+  }
 }
 function openModalFor(book){
   if(book==='cookbook'){
+    trackPurchaseIntent('Soup-A-Star Cookbook');
     window.open('https://selar.com/p/8bbt?affiliate=dr49','_blank','noopener');
   } else if(book==='mealplan'){
+    trackPurchaseIntent('1 Year Nigerian Meal Plan');
     window.open('https://selar.com/p/jcwa?affiliate=7ry7','_blank','noopener');
   } else {
     openModal();
